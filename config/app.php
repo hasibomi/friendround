@@ -154,11 +154,11 @@ return [
         /*
          * Application Service Providers...
          */
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
+        FriendRound\Providers\AppServiceProvider::class,
+        FriendRound\Providers\AuthServiceProvider::class,
+        // FriendRound\Providers\BroadcastServiceProvider::class,
+        FriendRound\Providers\EventServiceProvider::class,
+        FriendRound\Providers\RouteServiceProvider::class,
         Tymon\JWTAuth\Providers\JWTAuthServiceProvider::class,
 
     ],

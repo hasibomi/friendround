@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace FriendRound\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
