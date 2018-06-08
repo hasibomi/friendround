@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'user' => 'FriendRound\User',
+    'user' => 'FriendRound\Models\User',
 
     /*
     |--------------------------------------------------------------------------

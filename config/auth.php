@@ -67,7 +67,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => FriendRound\User::class,
+            'model' => FriendRound\Models\User::class,
         ],
 
         // 'users' => [
