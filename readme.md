@@ -1,5 +1,5 @@
 # FriendRound
-Friend Round is a social networking API developed for coding test by Chhuti.
+Friend Round is a social networking API developed for coding test for Chhuti.
 
 ### Package used
 1. [JWT](https://github.com/tymondesigns/jwt-auth)
