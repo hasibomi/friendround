@@ -4,6 +4,7 @@ namespace FriendRound\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -26,4 +27,34 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * Relationship with `block_lists` table.
+     *
+     * @return HasMany
+     */
+    public function blockList(): HasMany
+    {
+        return $this->hasMany(BlockList::class);
+    }
+
+    /**
+     * Relationship with `groups` table.
+     *
+     * @return HasMany
+     */
+    public function group(): HasMany
+    {
+        return $this->hasMany(Group::class);
+    }
+
+    /**
+     * Relationship with `members` table.
+     *
+     * @return HasMany
+     */
+    public function member(): HasMany
+    {
+        return $this->hasMany(Member::class);
+    }
 }
