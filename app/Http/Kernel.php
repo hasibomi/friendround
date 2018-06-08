@@ -60,5 +60,7 @@ class Kernel extends HttpKernel
         'guest' => \FriendRound\Http\Middleware\RedirectIfAuthenticated::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'jwt.auth' => \FriendRound\Http\Middleware\GetUserFromToken::class,
+        'jwt.refresh' => 'Tymon\JWTAuth\Middleware\RefreshToken',
     ];
 }

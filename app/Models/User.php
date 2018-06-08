@@ -16,7 +16,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'photo', 'username', 'email', 'password',
     ];
 
     /**
@@ -27,6 +27,17 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * Save hashed password in to database.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setPasswordAttribute(string $value): void
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
 
     /**
      * Relationship with `block_lists` table.
