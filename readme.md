@@ -12,7 +12,7 @@ Friend Round is a social networking API developed for coding test for Chhuti.
 
 ### Installation
 1. Clone the repo
-2. Run `composer install`
+2. Run `composer update`
 3. Make `.env` file & copy-paste the contents from `.env.example`
 4. Change `APP_NAME`, `APP_URL`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
 5. Run `php artisan key:generate`
