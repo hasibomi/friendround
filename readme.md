@@ -18,3 +18,6 @@ Friend Round is a social networking API developed for coding test for Chhuti.
 5. Run `php artisan key:generate`
 6. Run `php artisan migrate`
 7. Run `php artisan serve` & visit `http://localhost:8000` on your browser
+
+### Testing
+Run `vendor/bin/phpunit`
