@@ -5,9 +5,12 @@ namespace Tests\Feature\Unguarded;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JWTAuth;
 
 class AuthenticationTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Test user login request api input data validation.
      *
@@ -32,6 +35,15 @@ class AuthenticationTest extends TestCase
      */
     public function testLoginIsSuccess() : array
     {
+        # Seed database first.
+        factory(\FriendRound\Models\User::class)->create([
+            'name' => 'John Doe',
+            'username' => 'john',
+            'email' => 'john@doe.com',
+            'password' => '123456'
+        ]);
+
+        # Actual test.
         $response = $this->withHeaders([
             'Content-Type' => 'application/json'
         ])->json('POST', $this->url('login'), [
@@ -40,6 +52,11 @@ class AuthenticationTest extends TestCase
         ]);
 
         $response->assertStatus(200)->assertJson(['status' => 'success']);
+
+        # Assert the user actually exists in the database.
+        $this->assertDatabaseHas('users', [
+            'username' => 'john'
+        ]);
 
         return $response->decodeResponseJson();
     }
@@ -51,11 +68,20 @@ class AuthenticationTest extends TestCase
      */
     public function testLoginIsFailed() : void
     {
+        # Seed database first.
+        factory(\FriendRound\Models\User::class)->create([
+            'name' => 'John Doe',
+            'username' => 'john',
+            'email' => 'john@doe.com',
+            'password' => '123456'
+        ]);
+
+        # Actual test.
         $response = $this->withHeaders([
             'Content-Type' => 'application/json'
         ])->json('POST', $this->url('login'), [
             'username' => 'john',
-            'password' => '1234567'
+            'password' => '12345675656fsfsd'
         ]);
 
         $response->assertStatus(400)->assertJson(['status' => 'error']);
@@ -71,7 +97,7 @@ class AuthenticationTest extends TestCase
     public function testLogoutIsSuccess(array $response) : void
     {
         $this->withHeaders([
-            'Authorization' => 'Bearer ' . $response['token']
+            'Authorization' => $this->token()
         ])->json('POST', $this->url('logout'))->assertStatus(200)->assertJson(['status' => 'success']);
     }
 

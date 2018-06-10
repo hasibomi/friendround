@@ -8,6 +8,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SearchTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * Test search user input data validation.
      *
@@ -15,7 +17,7 @@ class SearchTest extends TestCase
      */
     public function testSearchUserDataValidation() : void
     {
-        $this->withHeaders(['Authorization' => 'Bearer ' . $this->token])->json('GET', $this->url('search'))->assertStatus(422);
+        $this->withHeaders(['Authorization' => $this->token()])->json('GET', $this->url('search'))->assertStatus(422);
     }
 
     /**
@@ -25,7 +27,24 @@ class SearchTest extends TestCase
      */
     public function testSearchUserIsSuccess(): void
     {
-        $this->withHeaders(['Authorization' => 'Bearer ' . $this->token])->json('GET', $this->url('search'), [
+        # Seed database first.
+        $additionalUsers = [
+            [
+                'name' => 'Test User',
+                'username' => 'tuser',
+                'email' => 'user@test.com',
+                'password' => '123456'
+            ],
+            [
+                'name' => 'Spider Man',
+                'username' => 'spidy',
+                'email' => 'spiderman@web.com',
+                'password' => '123456'
+            ]
+        ];
+        \FriendRound\Models\User::insert($additionalUsers);
+        
+        $this->withHeaders(['Authorization' => $this->token()])->json('GET', $this->url('search'), [
             'term' => 'john@doe.com'
         ])->assertStatus(200)->assertJson(['status' => 'success']);
     }
@@ -37,7 +56,7 @@ class SearchTest extends TestCase
      */
     public function testSearchUserIsEmpty(): void
     {
-        $this->withHeaders(['Authorization' => 'Bearer ' . $this->token])->json('GET', $this->url('search'), [
+        $this->withHeaders(['Authorization' => $this->token()])->json('GET', $this->url('search'), [
             'term' => 'jane'
         ])->assertStatus(200)->assertExactJson(['status' => 'success', 'results' => []]);
     }
