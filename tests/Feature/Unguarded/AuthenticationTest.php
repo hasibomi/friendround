@@ -31,9 +31,9 @@ class AuthenticationTest extends TestCase
     /**
      * Test user can login successfully.
      *
-     * @return array
+     * @return void
      */
-    public function testLoginIsSuccess() : array
+    public function testLoginIsSuccess() : void
     {
         # Seed database first.
         factory(\FriendRound\Models\User::class)->create([
@@ -57,8 +57,6 @@ class AuthenticationTest extends TestCase
         $this->assertDatabaseHas('users', [
             'username' => 'john'
         ]);
-
-        return $response->decodeResponseJson();
     }
 
     /**
@@ -90,11 +88,9 @@ class AuthenticationTest extends TestCase
     /**
      * Test user can logout successfully.
      *
-     * @depends testLoginIsSuccess
-     * @param array $response
      * @return void
      */
-    public function testLogoutIsSuccess(array $response) : void
+    public function testLogoutIsSuccess() : void
     {
         $this->withHeaders([
             'Authorization' => $this->token()
