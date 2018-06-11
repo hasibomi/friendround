@@ -21,22 +21,40 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Generate a token based on a user created for test.
+     * Make a user & create token based on the user.
      *
+     * @param array $data
      * @return string
      */
-    protected function token(): string
+    protected function auth(?array $data = []): string
     {
         # Seed the database first.
-        $user = factory(\FriendRound\Models\User::class)->create([
-            'name' => 'John Doe',
-            'username' => 'john',
-            'email' => 'john@doe.com',
-            'password' => '123456'
-        ]);
+        if (! empty($data)) {
+            $user = factory(\FriendRound\Models\User::class)->create($data);
+        } else {
+            $user = factory(\FriendRound\Models\User::class)->create([
+                'name' => 'John Doe',
+                'username' => 'john',
+                'email' => 'john@doe.com',
+                'password' => '123456'
+            ]);
+        }
 
         # Generate token.
         $token = JWTAuth::fromUser($user);
+
+        return $token;
+    }
+
+    /**
+     * Set token for authorization header.
+     *
+     * @param string $token
+     * @return string
+     */
+    protected function token(?string $token = ''): string
+    {
+        if (! $token) $token = $this->auth();
 
         return 'Bearer ' . $token;
     }

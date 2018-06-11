@@ -40,6 +40,47 @@ class User extends Authenticatable
     }
 
     /**
+     * Find a user by username.
+     *
+     * @param string $username
+     * @return self
+     */
+    public static function findByUsername(string $username): \Illuminate\Database\Eloquent\Builder
+    {
+        return self::where('username', $username);
+    }
+
+    /**
+     * Relationship with `friends` table in terms of friend request sender.
+     *
+     * @return HasMany
+     */
+    public function friendRequestSender(): HasMany
+    {
+        return $this->hasMany(Friend::class, 'sender_id', 'id');
+    }
+
+    /**
+     * Relationship with `friends` table in terms of friend request receiver.
+     *
+     * @return HasMany
+     */
+    public function friendRequestReceiver(): HasMany
+    {
+        return $this->hasMany(Friend::class, 'receiver_id', 'id');
+    }
+
+    /**
+     * Get friend list.
+     *
+     * @return Friend
+     */
+    public function friend(): Friend
+    {
+        return Friend::where('sender_id', $this->id)->orWhere('receiver_id', $this->id)->where('status', 1)->get();
+    }
+
+    /**
      * Relationship with `block_lists` table.
      *
      * @return HasMany

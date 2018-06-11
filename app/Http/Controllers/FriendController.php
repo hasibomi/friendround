@@ -7,6 +7,8 @@ use FriendRound\Http\Requests\SearchRequest;
 use FriendRound\Models\User;
 use FriendRound\Http\Resources\SearchResource;
 use FriendRound\Http\Resources\UserResource;
+use JWTAuth;
+use FriendRound\Models\Friend;
 
 class FriendController extends Controller
 {
@@ -41,5 +43,67 @@ class FriendController extends Controller
         $result = new UserResource($result);
 
         return response()->json(['status' => 'success', 'results' => $result], 200);
+    }
+
+    /**
+     * Send a friend request to a user.
+     *
+     * @param string $username
+     * @return JsonResponse
+     */
+    public function sendRequest(string $username): JsonResponse
+    {
+        $auth = JWTAuth::parseToken()->authenticate();
+        $user = User::findByUsername($username)->first();
+
+        if (is_null($user)) {
+            return response()->json(['status' => 'error', 'message' => 'The requested user could not be found'], 404);
+        }
+
+        $auth->friendRequestSender()->create([
+            'receiver_id' => $user->id
+        ]);
+
+        return response()->json(['status' => 'success', 'message' => 'Friend request sent'], 201);
+    }
+
+    /**
+     * Accept the specified friend request.
+     *
+     * @param integer $requestID
+     * @return JsonResponse
+     */
+    public function acceptRequest(int $requestID): JsonResponse
+    {
+        $auth = JWTAuth::parseToken()->authenticate();
+        $request = $auth->friendRequestReceiver()->where('id', $requestID);
+
+        if (is_null($request->first())) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid request'], 400);
+        }
+
+        $request->update(['status' => 1]);
+
+        return response()->json(['status' => 'success', 'message' => 'Friend request accepted'], 200);
+    }
+
+    /**
+     * Decline the specified friend request.
+     *
+     * @param integer $requestID
+     * @return JsonResponse
+     */
+    public function declineRequest(int $requestID) : JsonResponse
+    {
+        $auth = JWTAuth::parseToken()->authenticate();
+        $request = $auth->friendRequestReceiver()->where('id', $requestID);
+
+        if (is_null($request->first())) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid request'], 400);
+        }
+
+        $request->delete();
+
+        return response()->json(['status' => 'success', 'message' => 'Friend request rejected'], 200);
     }
 }

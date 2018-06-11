@@ -17,5 +17,11 @@ Route::group(['middleware' => 'jwt.auth'], function() {
     Route::group(['middleware' => 'jwt.refresh'], function() {
         Route::get('search', 'FriendController@search');
         Route::get('users/{username}', 'FriendController@view');
+
+        Route::group(['prefix' => 'friendrequests'], function() {
+            Route::post('send/{username}', 'FriendController@sendRequest');
+            Route::post('{requestID}', 'FriendController@acceptRequest');
+            Route::delete('{requestID}', 'FriendController@declineRequest');
+        });
     });
 });
