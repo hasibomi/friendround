@@ -54,14 +54,19 @@ class FriendController extends Controller
      */
     public function sendRequest(string $username): JsonResponse
     {
-        $auth = JWTAuth::parseToken()->authenticate();
         $user = User::findByUsername($username)->first();
 
         if (is_null($user)) {
             return response()->json(['status' => 'error', 'message' => 'The requested user could not be found'], 404);
         }
 
-        $auth->friendRequestSender()->create([
+        # Check the requested user is a blocked user of the authenticated user.
+        $blockedUser = $this->auth()->blockList()->where('blocked_user_id', $user->id)->first();
+        if (! is_null($blockedUser)) {
+            return response()->json(['status' => 'error', 'message' => 'Sorry, you cannot add a blocked user as a friend'], 400);
+        }
+
+        $this->auth()->friendRequestSender()->create([
             'receiver_id' => $user->id
         ]);
 
