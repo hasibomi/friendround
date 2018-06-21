@@ -21,3 +21,6 @@ Friend Round is a social networking API developed for coding test for Chhuti.
 
 ### Testing
 Run `vendor/bin/phpunit`
+
+### API Endpoints
+[Endpoints](https://documenter.getpostman.com/view/959743/RWEawi3Z)
