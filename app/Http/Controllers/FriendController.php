@@ -4,11 +4,9 @@ namespace FriendRound\Http\Controllers;
 
 use Illuminate\Http\{ Request, JsonResponse };
 use FriendRound\Http\Requests\SearchRequest;
-use FriendRound\Models\User;
-use FriendRound\Http\Resources\SearchResource;
-use FriendRound\Http\Resources\UserResource;
+use FriendRound\Models\{ User, Friend };
+use FriendRound\Http\Resources\{ SearchResource, UserResource, FriendsResource };
 use JWTAuth;
-use FriendRound\Models\Friend;
 
 class FriendController extends Controller
 {
@@ -105,5 +103,27 @@ class FriendController extends Controller
         $request->delete();
 
         return response()->json(['status' => 'success', 'message' => 'Friend request rejected'], 200);
+    }
+
+    /**
+     * Get friend list either online or all.
+     * Online friends can be filtered by using `status` query parameter.
+     * Ex: /friends?status=online
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function list(Request $request): JsonResponse
+    {
+        $auth = JWTAuth::parseToken()->authenticate();
+        if ($request->has('status') && $request->input('status') === 'online') {
+            $friends = $auth->onlineFriends()->get();
+        } else {
+            $friends = $auth->friends()->get();
+        }
+
+        $results = FriendsResource::collection($friends);
+        
+        return response()->json(['status' => 'success', 'results' => $results]);
     }
 }

@@ -23,5 +23,7 @@ Route::group(['middleware' => 'jwt.auth'], function() {
             Route::post('{requestID}', 'FriendController@acceptRequest');
             Route::delete('{requestID}', 'FriendController@declineRequest');
         });
+
+        Route::get('friends', 'FriendController@list');
     });
 });

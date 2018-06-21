@@ -5,6 +5,7 @@ namespace FriendRound\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use JWTAuth;
 
 class User extends Authenticatable
 {
@@ -16,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'photo', 'username', 'email', 'password',
+        'name', 'photo', 'username', 'email', 'password', 'loggedin'
     ];
 
     /**
@@ -51,6 +52,28 @@ class User extends Authenticatable
     }
 
     /**
+     * Make the logged in user online.
+     *
+     * @param int $ID
+     * @return void
+     */
+    public function setOnline(int $ID) : void
+    {
+        $this->where('id', $ID)->update(['loggedin' => 1]);
+    }
+
+    /**
+     * Make the logged in user offline.
+     *
+     * @param int $ID
+     * @return void
+     */
+    public function setOffline(int $ID) : void
+    {
+        $this->where('id', $ID)->update(['loggedin' => 0]);
+    }
+
+    /**
      * Relationship with `friends` table in terms of friend request sender.
      *
      * @return HasMany
@@ -73,11 +96,28 @@ class User extends Authenticatable
     /**
      * Get friend list.
      *
-     * @return Friend
+     * @return \Illuminate\Database\Query\Builder
      */
-    public function friend(): Friend
+    public function friends(): \Illuminate\Database\Query\Builder
     {
-        return Friend::where('sender_id', $this->id)->orWhere('receiver_id', $this->id)->where('status', 1)->get();
+        $auth = JWTAuth::parseToken()->authenticate();
+
+        return \DB::table('friends')->select('friends.*', 'users.id as userID', 'username', 'name', 'email', 'photo', 'loggedin')->join('users', function ($join) use ($auth) {
+            $join->on('users.id', '=', 'friends.receiver_id')->orOn('users.id', '=', 'friends.sender_id');
+        })->where('friends.status', '=', 1)
+          ->where('users.id', '!=', $auth->id)
+          ->where('friends.receiver_id', '=', $auth->id)
+          ->orWhere('friends.sender_id', '=', $auth->id);
+    }
+
+    /**
+     * Get online friends.
+     *
+     * @return \Illuminate\Database\Query\Builder
+     */
+    public function onlineFriends(): \Illuminate\Database\Query\Builder
+    {
+        return $this->friends()->where('loggedin', 1);
     }
 
     /**

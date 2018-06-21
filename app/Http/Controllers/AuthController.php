@@ -43,6 +43,9 @@ class AuthController extends Controller
             return response()->json(['status' => 'error', 'message' => $e], 500);
         }
 
+        $auth = JWTAuth::setToken($token)->authenticate();
+        $auth->setOnline($auth->id);
+
         return response()->json(['status' => 'success', 'token' => $token], 200);
     }
 
@@ -53,6 +56,8 @@ class AuthController extends Controller
      */
     public function logout() : JsonResponse
     {
+        $auth = JWTAuth::parseToken()->authenticate();
+        $auth->setOffline($auth->id);
         JWTAuth::invalidate(JWTAuth::getToken());
 
         return response()->json(['status' => 'success', 'message' => 'Logout successfull'], 200);
