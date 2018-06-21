@@ -18,7 +18,10 @@ class FriendController extends Controller
      */
     public function search(SearchRequest $request): JsonResponse
     {
-        $results = User::where('email', 'LIKE', '%' . $request->input('term') . '%')->orWhere('username', 'LIKE', '%' . $request->input('term') . '%')->get();
+        # Do not include blocked user in search results.
+        $results = \DB::table('users')->join('block_lists', function ($join) {
+            $join->on('users.id', '!=', 'block_lists.blocked_user_id')->where('user_id', $this->auth()->id);
+        })->where('email', 'LIKE', '%' . $request->input('term') . '%')->orWhere('username', 'LIKE', '%' . $request->input('term') . '%')->get();
         $results = SearchResource::collection($results);
 
         return response()->json(['status' => 'success', 'results' => $results], 200);

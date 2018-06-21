@@ -13,6 +13,11 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    /**
+     * Get the authenticated user from token.
+     *
+     * @return User
+     */
     protected function auth(): User
     {
         return JWTAuth::parseToken()->authenticate();
