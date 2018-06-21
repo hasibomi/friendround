@@ -25,5 +25,12 @@ Route::group(['middleware' => 'jwt.auth'], function() {
         });
 
         Route::get('friends', 'FriendController@list');
+
+        # Block list.
+        Route::group(['prefix' => 'blocklist'], function () {
+            Route::get('/', 'BlockListController@list');
+            Route::post('{userID}', 'BlockListController@store');
+            Route::delete('{blockListID}', 'BlockListController@destroy');
+        });
     });
 });
