@@ -33,4 +33,10 @@ Route::group(['middleware' => 'jwt.auth'], function() {
             Route::delete('{blockListID}', 'BlockListController@destroy');
         });
     });
+
+    Route::group(['prefix' => 'conversations'], function () {
+        Route::get('/', 'MessageController@conversations');
+        Route::post('/', 'MessageController@send');
+        Route::get('{conversationID}', 'MessageController@show');
+    });
 });

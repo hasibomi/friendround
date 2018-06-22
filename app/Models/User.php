@@ -149,4 +149,24 @@ class User extends Authenticatable
     {
         return $this->hasMany(Member::class);
     }
+
+    /**
+     * Relationship with `messages` table in terms of receiving messages.
+     *
+     * @return HasMany
+     */
+    public function inbox(): HasMany
+    {
+        return $this->hasMany(Message::class, 'receiver_id', 'id');
+    }
+
+    /**
+     * Relationship with `messages` table in terms of sending messages.
+     *
+     * @return HasMany
+     */
+    public function sentbox() : HasMany
+    {
+        return $this->hasMany(Message::class, 'sender_id', 'id');
+    }
 }
